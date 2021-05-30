@@ -11,7 +11,7 @@ module ID(
 	output	wire	[31:0]	o_MEM_data_RTData,
 	output	wire	[4:0]	o_EX_data_RTAddr,
 	output	wire	[4:0]	o_EX_data_RDAddr,
-	output	wire	[31:0]	o_EX_data_AddrOffset,
+	output	wire	[31:0]	o_EX_data_ExtImm,
 	output	wire	[4:0]	o_EX_data_Shamt,
 	output	wire	[5:0]	o_EX_data_Funct,
 	output	wire	[3:0]	o_EX_ctrl_ALUOp,
@@ -41,6 +41,7 @@ module ID(
     assign {OP, RS, RT, RD, SHAMT, FUNCT} = INSTR;
     assign ADDR = INSTR[15:0];
 
+	wire [3:0] ALUOp;
     wire ALUSrc, RegDst, MemWrite, MemRead, Branch, Mem2Reg, RegWrite;
     Control control(
         .Op(OP),
@@ -55,7 +56,7 @@ module ID(
     assign o_MEM_data_RTData = i_ID_reg_RegData2;
     assign o_EX_data_RTAddr = RT;
     assign o_EX_data_RDAddr = RD;
-    assign o_EX_data_AddrOffset = {16{ADDR[15]}, ADDR};
+    assign o_EX_data_ExtImm = {{16{ADDR[15]}}, ADDR};
     assign o_EX_data_Shamt = SHAMT;
     assign o_EX_data_Funct = FUNCT;
     assign o_EX_ctrl_ALUOp = ALUOp;
@@ -65,7 +66,7 @@ module ID(
     assign o_MEM_ctrl_MemRead = MemRead;
     assign o_MEM_ctrl_Branch = Branch;
     assign o_WB_ctrl_Mem2Reg = Mem2Reg;
-    assign o_WB_Ctrl_RegWrite = RegWrite;
+    assign o_WB_ctrl_RegWrite = RegWrite;
 	assign o_ID_reg_RegAddr1 = INSTR[25:21];
 	assign o_ID_reg_RegAddr2 = INSTR[20:16];
 	/* Output Assignment End */

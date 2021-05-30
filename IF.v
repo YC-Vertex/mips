@@ -14,7 +14,8 @@ module IF(
 
 );
 
-    parameter MIPS_START_ADDR = 32'h4001fffc;
+    // parameter MIPS_START_ADDR = 32'h4001fffc;
+    parameter MIPS_START_ADDR = 32'h0;
 
     reg [31:0] PC;
     wire [31:0] PCNext;

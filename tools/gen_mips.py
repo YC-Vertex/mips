@@ -10,7 +10,7 @@ Signal = [
     ('RTData',      'ID', 'MEM',    'data', 32),
     ('RTAddr',      'ID', 'EX',     'data', 5),
     ('RDAddr',      'ID', 'EX',     'data', 5),
-    ('AddrOffset',  'ID', 'EX',     'data', 32),
+    ('ExtImm',      'ID', 'EX',     'data', 32),
     ('Shamt',       'ID', 'EX',     'data', 5),
     ('Funct',       'ID', 'EX',     'data', 6),
     ('ALUOp',       'ID', 'EX',     'ctrl', 4),
@@ -25,14 +25,14 @@ Signal = [
     ('ALUOut',      'EX', 'MEM',    'data', 32),
     ('Zero',        'EX', 'MEM',    'data', 1),
     ('Overflow',    'EX', 'MEM',    'data', 1),
-    ('RegAddrW',    'EX', 'WB',     'data', 32),
+    ('RegAddrW',    'EX', 'WB',     'data', 5),
     ('MemData',     'MEM','WB',     'data', 32),
     ('ALUData',     'MEM','WB',     'data', 32)
 ]
 
 Signal_Next = [
     ('PCSrc',       'MEM','IF',     'ctrl', 1),
-    ('PCBranch',    'MEM','IF',     'data', 32),
+    ('PCBranch',    'MEM','IF',     'data', 32)
 ]
 
 Signal_External = [
@@ -40,7 +40,7 @@ Signal_External = [
     ('RegAddr2',    'ID', 'o',      'reg', 5),
     ('RegData1',    'ID', 'i',      'reg', 32),
     ('RegData2',    'ID', 'i',      'reg', 32),
-    ('RegAddrW',    'WB', 'o',      'reg', 32),
+    ('RegAddrW',    'WB', 'o',      'reg', 5),
     ('RegDataW',    'WB', 'o',      'reg', 32),
     ('RegWrite',    'WB', 'o',      'reg', 1),
     ('ImemAddr',    'IF', 'o',      'mem', 32),
@@ -73,11 +73,13 @@ def GenStage(fgen):
             elif end == stage:
                 header['input'].append(f'input\twire\t{swidth}\t{sname_i}')
             elif STAGE.index(start) < i and STAGE.index(end) > i:
-                header['bypass'].append(f'input\twire\t{swidth}\t{sname_i}')
-                header['bypass'].append(f'output\twire\t{swidth}\t{sname_o}')
                 if stage.find('_Reg') == -1:
+                    header['bypass'].append(f'input\twire\t{swidth}\t{sname_i}')
+                    header['bypass'].append(f'output\twire\t{swidth}\t{sname_o}')
                     content['assign'].append(f'assign {sname_o} = {sname_i};')
                 else:
+                    header['bypass'].append(f'input\twire\t{swidth}\t{sname_i}')
+                    header['bypass'].append(f'output\treg \t{swidth}\t{sname_o}')
                     content['clk'].append(f'{sname_o} <= {sname_i};')
                     content['rst'].append(f'{sname_o} <= {width}\'d0;')
     
@@ -216,10 +218,10 @@ def GenTop(fgen):
 
             if start == stage:
                 header['output'].append((sname_o, wname_o, swidth))
-                content.append(f'wire\t{swidth}\t{wname_o};')
+                content.append(f'wire\t{swidth}\t{wname_o}; assign {end}_{sname}_i = {start}_{sname}_o;')
             elif end == stage:
                 header['input'].append((sname_i, wname_i, swidth))
-                content.append(f'wire\t{swidth}\t{wname_i}; assign {wname_i} = {start}_{sname}_o;')
+                content.append(f'wire\t{swidth}\t{wname_i};')
 
         if stage.find('_Reg') == -1:
             content.append(f'// {stage} external signal (connected to Memory or Register File)')

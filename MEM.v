@@ -26,8 +26,8 @@ module MEM(
 	output	wire			o_WB_ctrl_Mem2Reg,
 	input	wire			i_WB_ctrl_RegWrite,
 	output	wire			o_WB_ctrl_RegWrite,
-	input	wire	[31:0]	i_WB_data_RegAddrW,
-	output	wire	[31:0]	o_WB_data_RegAddrW
+	input	wire	[4:0]	i_WB_data_RegAddrW,
+	output	wire	[4:0]	o_WB_data_RegAddrW
 );
 
 	/* Output Assignment Begin */

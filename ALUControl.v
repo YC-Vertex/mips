@@ -4,7 +4,7 @@ module ALUControl(
     output reg [3:0] ALUCtl
 );
 
-    always@(ALUOp,FuncCode)
+    always@(*)
     begin
         if(ALUOp[3])
         begin

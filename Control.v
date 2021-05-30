@@ -11,7 +11,7 @@ module Control(
             begin
                 RegDst<=1'b1;
                 ALUSrc<=1'b0;
-                MemtoReg<=1'b0;
+                MemtoReg<=1'b1;
                 RegWrite<=1'b1;
                 MemRead<=1'b0;
                 MemWrite<=1'b0;
@@ -20,14 +20,12 @@ module Control(
                 jump<=1'b0;
                 SignExtend<=1'b1;
                 pcreg<=1'b0;
-
-
             end
             6'b100011://lw
             begin
                 RegDst<=1'b0;
                 ALUSrc<=1'b1;
-                MemtoReg<=1'b1;
+                MemtoReg<=1'b0;
                 RegWrite<=1'b1;
                 MemRead<=1'b1;
                 MemWrite<=1'b0;
@@ -42,7 +40,7 @@ module Control(
             begin
                 RegDst<=1'b1;
                 ALUSrc<=1'b1;
-                MemtoReg<=1'b1;
+                MemtoReg<=1'b0;
                 RegWrite<=1'b0;
                 MemRead<=1'b0;
                 MemWrite<=1'b1;
@@ -57,7 +55,7 @@ module Control(
             begin
                 RegDst<=1'b1;
                 ALUSrc<=1'b0;
-                MemtoReg<=1'b1;
+                MemtoReg<=1'b0;
                 RegWrite<=1'b0;
                 MemRead<=1'b0;
                 MemWrite<=1'b0;
@@ -72,7 +70,7 @@ module Control(
             begin
                 RegDst<=1'b1;
                 ALUSrc<=1'b0;
-                MemtoReg<=1'b1;
+                MemtoReg<=1'b0;
                 RegWrite<=1'b0;
                 MemRead<=1'b0;
                 MemWrite<=1'b0;
@@ -86,7 +84,7 @@ module Control(
             begin
                 RegDst<=1'b0;
                 ALUSrc<=1'b1;
-                MemtoReg<=1'b0;
+                MemtoReg<=1'b1;
                 RegWrite<=1'b1;
                 MemRead<=1'b0;
                 MemWrite<=1'b0;
@@ -99,7 +97,7 @@ module Control(
             begin
                 RegDst<=1'b0;
                 ALUSrc<=1'b1;
-                MemtoReg<=1'b0;
+                MemtoReg<=1'b1;
                 RegWrite<=1'b1;
                 MemRead<=1'b0;
                 MemWrite<=1'b0;
@@ -113,7 +111,7 @@ module Control(
             begin
                 RegDst<=1'b0;
                 ALUSrc<=1'b1;
-                MemtoReg<=1'b0;
+                MemtoReg<=1'b1;
                 RegWrite<=1'b1;
                 MemRead<=1'b0;
                 MemWrite<=1'b0;
@@ -127,7 +125,7 @@ module Control(
             begin
                 RegDst<=1'b0;
                 ALUSrc<=1'b1;
-                MemtoReg<=1'b0;
+                MemtoReg<=1'b1;
                 RegWrite<=1'b1;
                 MemRead<=1'b0;
                 MemWrite<=1'b0;
@@ -141,7 +139,7 @@ module Control(
             begin
                 RegDst<=1'b0;
                 ALUSrc<=1'b1;
-                MemtoReg<=1'b0;
+                MemtoReg<=1'b1;
                 RegWrite<=1'b1;
                 MemRead<=1'b0;
                 MemWrite<=1'b0;
@@ -151,11 +149,11 @@ module Control(
                 SignExtend<=1'b0;
                 pcreg<=1'b0;
             end
-            6'b001111://addi
+            6'b001111://lui
             begin
                 RegDst<=1'b0;
                 ALUSrc<=1'b1;
-                MemtoReg<=1'b0;
+                MemtoReg<=1'b1;
                 RegWrite<=1'b1;
                 MemRead<=1'b0;
                 MemWrite<=1'b0;
@@ -169,7 +167,7 @@ module Control(
             begin
                 RegDst<=1'b0;
                 ALUSrc<=1'b1;
-                MemtoReg<=1'b0;
+                MemtoReg<=1'b1;
                 RegWrite<=1'b1;
                 MemRead<=1'b0;
                 MemWrite<=1'b0;
@@ -183,7 +181,7 @@ module Control(
             begin
                 RegDst<=1'b0;
                 ALUSrc<=1'b1;
-                MemtoReg<=1'b0;
+                MemtoReg<=1'b1;
                 RegWrite<=1'b1;
                 MemRead<=1'b0;
                 MemWrite<=1'b0;
@@ -192,6 +190,17 @@ module Control(
                 jump<=1'b1;
                 SignExtend<=1'b1;
                 pcreg<=1'b1;
+            end
+            default:
+            begin
+                RegDst<=1'b0;
+                ALUSrc<=1'b0;
+                MemtoReg<=1'b0;
+                RegWrite<=1'b0;
+                MemRead<=1'b0;
+                MemWrite<=1'b0;
+                Branch<=1'b0;
+                ALUOp<=4'b0000;
             end
         endcase
     end

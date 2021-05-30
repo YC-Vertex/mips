@@ -8,27 +8,27 @@ module EX_MEM_Reg(
 	
 	/* --- bypass --- */
 	input	wire	[31:0]	i_MEM_data_RTData,
-	output	wire	[31:0]	o_MEM_data_RTData,
+	output	reg 	[31:0]	o_MEM_data_RTData,
 	input	wire			i_MEM_ctrl_MemWrite,
-	output	wire			o_MEM_ctrl_MemWrite,
+	output	reg 			o_MEM_ctrl_MemWrite,
 	input	wire			i_MEM_ctrl_MemRead,
-	output	wire			o_MEM_ctrl_MemRead,
+	output	reg 			o_MEM_ctrl_MemRead,
 	input	wire			i_MEM_ctrl_Branch,
-	output	wire			o_MEM_ctrl_Branch,
+	output	reg 			o_MEM_ctrl_Branch,
 	input	wire			i_WB_ctrl_Mem2Reg,
-	output	wire			o_WB_ctrl_Mem2Reg,
+	output	reg 			o_WB_ctrl_Mem2Reg,
 	input	wire			i_WB_ctrl_RegWrite,
-	output	wire			o_WB_ctrl_RegWrite,
+	output	reg 			o_WB_ctrl_RegWrite,
 	input	wire	[31:0]	i_MEM_data_PCBranch,
-	output	wire	[31:0]	o_MEM_data_PCBranch,
+	output	reg 	[31:0]	o_MEM_data_PCBranch,
 	input	wire	[31:0]	i_MEM_data_ALUOut,
-	output	wire	[31:0]	o_MEM_data_ALUOut,
+	output	reg 	[31:0]	o_MEM_data_ALUOut,
 	input	wire			i_MEM_data_Zero,
-	output	wire			o_MEM_data_Zero,
+	output	reg 			o_MEM_data_Zero,
 	input	wire			i_MEM_data_Overflow,
-	output	wire			o_MEM_data_Overflow,
-	input	wire	[31:0]	i_WB_data_RegAddrW,
-	output	wire	[31:0]	o_WB_data_RegAddrW
+	output	reg 			o_MEM_data_Overflow,
+	input	wire	[4:0]	i_WB_data_RegAddrW,
+	output	reg 	[4:0]	o_WB_data_RegAddrW
 );
 
 	always @ (posedge clk or negedge nrst) begin

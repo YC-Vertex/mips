@@ -7,7 +7,7 @@ module EX(
 	input	wire	[31:0]	i_EX_data_RSData,
 	input	wire	[4:0]	i_EX_data_RTAddr,
 	input	wire	[4:0]	i_EX_data_RDAddr,
-	input	wire	[31:0]	i_EX_data_AddrOffset,
+	input	wire	[31:0]	i_EX_data_ExtImm,
 	input	wire	[4:0]	i_EX_data_Shamt,
 	input	wire	[5:0]	i_EX_data_Funct,
 	input	wire	[3:0]	i_EX_ctrl_ALUOp,
@@ -18,7 +18,7 @@ module EX(
 	output	wire	[31:0]	o_MEM_data_ALUOut,
 	output	wire			o_MEM_data_Zero,
 	output	wire			o_MEM_data_Overflow,
-	output	wire	[31:0]	o_WB_data_RegAddrW,
+	output	wire	[4:0]	o_WB_data_RegAddrW,
 	/* --- bypass --- */
 	input	wire	[31:0]	i_MEM_data_RTData,
 	output	wire	[31:0]	o_MEM_data_RTData,
@@ -35,14 +35,14 @@ module EX(
 );
 
     wire [31:0] pc_next;
-    wire [31:0] addr_offset;
+    wire [31:0] ext_imm;
     assign pc_next = i_EX_data_PCNext;
-    assign addr_offset = i_EX_data_AddrOffset;
+    assign ext_imm = i_EX_data_ExtImm;
 
     wire [31:0] A;
     wire [31:0] B;
     assign A = i_EX_data_RSData;
-    assign B = i_EX_ctrl_ALUSrc ? addr_offset : i_MEM_data_RTData;
+    assign B = i_EX_ctrl_ALUSrc ? ext_imm : i_MEM_data_RTData;
 
     wire [3:0] ALUOp;
     wire [4:0] shamt;
@@ -67,7 +67,7 @@ module EX(
     );
 
 	/* Output Assignment Begin */
-	assign o_MEM_data_PCBranch = pc_next + {addr_offset[29:0], 2'b00};
+	assign o_MEM_data_PCBranch = pc_next + {ext_imm[29:0], 2'b00};
 	assign o_MEM_data_ALUOut = ALUOut;
 	assign o_MEM_data_Zero = Zero;
 	assign o_MEM_data_Overflow = Overflow;

@@ -9,18 +9,21 @@ module RegFile(
     output [31:0] ReadData1,
     output [31:0] ReadData2
 );
-reg [31:0] regFile[1:31];
-integer i;
-assign ReadData1=(ReadReg1==5'b0) ? 32'b0:regFile[ReadReg1];
-assign ReadData2=(ReadReg2==5'b0) ? 32'b0:regFile[ReadReg2];
-always@(posedge CLK or negedge RST)
-begin
-    if(!RST)
+
+    reg [31:0] regFile[1:31];
+    integer i;
+    assign ReadData1=(ReadReg1==5'b0) ? 32'b0:regFile[ReadReg1];
+    assign ReadData2=(ReadReg2==5'b0) ? 32'b0:regFile[ReadReg2];
+
+    always@(posedge CLK or negedge RST)
     begin
-        for(i=1;i<32;i=i+1)
-        regFile[i]<=32'b0;
+        if(!RST)
+        begin
+            for(i=1;i<32;i=i+1)
+            regFile[i]<=32'b0;
+        end
+        else if(RegWre&(WriteReg!=5'b0))
+        regFile[WriteReg]<=WriteData;
     end
-    else if(RegWre&(WriteReg!=5'b0))
-    regFile[WriteReg]<=WriteData;
-end
+
 endmodule
