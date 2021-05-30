@@ -2,6 +2,7 @@ module IF(
 	/* --- global ---*/
 	input	wire	clk,
 	input	wire	nrst,
+    input   wire    stall,
 	/* --- input --- */
 	input	wire			i_IF_ctrl_PCSrc,
 	input	wire	[31:0]	i_IF_data_PCBranch,
@@ -30,10 +31,14 @@ module IF(
             PC <= MIPS_START_ADDR;
         end
         else begin
-            if (PCSrc)
-                PC <= PCBranch;
-            else
-                PC <= PCNext;
+            if (stall)
+                PC <= PC;
+            else begin
+                if (PCSrc)
+                    PC <= PCBranch;
+                else
+                    PC <= PCNext;
+            end
         end
     end
 

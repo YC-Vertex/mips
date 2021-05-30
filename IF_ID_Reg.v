@@ -2,6 +2,8 @@ module IF_ID_Reg(
 	/* --- global ---*/
 	input	wire	clk,
 	input	wire	nrst,
+	input	wire	stall,
+	input	wire	bubble,
 	/* --- input --- */
 	
 	/* --- output --- */
@@ -19,13 +21,22 @@ module IF_ID_Reg(
 			// o_ID_data_instruction <= 32'd0;
 		end
 		else begin
-			o_EX_data_PCNext <= i_EX_data_PCNext;
-			// o_ID_data_instruction <= i_ID_data_instruction;
+			if (~stall) begin
+				if (bubble) begin
+					o_EX_data_PCNext <= 32'd0;
+					// o_ID_data_instruction <= 32'd0;
+				end
+				else begin
+					o_EX_data_PCNext <= i_EX_data_PCNext;
+					// o_ID_data_instruction <= i_ID_data_instruction;
+				end
+			end
 		end
 	end
 	
 	always @ (*) begin
-		o_ID_data_instruction = i_ID_data_instruction;
+		if (~stall)
+			o_ID_data_instruction = i_ID_data_instruction;
 	end
 
 endmodule

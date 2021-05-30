@@ -5,6 +5,7 @@ module EX(
 	/* --- input --- */
 	input	wire	[31:0]	i_EX_data_PCNext,
 	input	wire	[31:0]	i_EX_data_RSData,
+	input	wire	[4:0]	i_EX_data_RSAddr,
 	input	wire	[4:0]	i_EX_data_RTAddr,
 	input	wire	[4:0]	i_EX_data_RDAddr,
 	input	wire	[31:0]	i_EX_data_ExtImm,

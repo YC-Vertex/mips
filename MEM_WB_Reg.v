@@ -2,6 +2,8 @@ module MEM_WB_Reg(
 	/* --- global ---*/
 	input	wire	clk,
 	input	wire	nrst,
+	input	wire	stall,
+	input	wire	bubble,
 	/* --- input --- */
 	
 	/* --- output --- */
@@ -28,11 +30,22 @@ module MEM_WB_Reg(
 			o_WB_data_ALUData <= 32'd0;
 		end
 		else begin
-			o_WB_ctrl_Mem2Reg <= i_WB_ctrl_Mem2Reg;
-			o_WB_ctrl_RegWrite <= i_WB_ctrl_RegWrite;
-			o_WB_data_RegAddrW <= i_WB_data_RegAddrW;
-			// o_WB_data_MemData <= i_WB_data_MemData;
-			o_WB_data_ALUData <= i_WB_data_ALUData;
+			if (~stall) begin
+				if (bubble) begin
+					o_WB_ctrl_Mem2Reg <= 1'd0;
+					o_WB_ctrl_RegWrite <= 1'd0;
+					o_WB_data_RegAddrW <= 32'd0;
+					// o_WB_data_MemData <= 32'd0;
+					o_WB_data_ALUData <= 32'd0;
+				end
+				else begin
+					o_WB_ctrl_Mem2Reg <= i_WB_ctrl_Mem2Reg;
+					o_WB_ctrl_RegWrite <= i_WB_ctrl_RegWrite;
+					o_WB_data_RegAddrW <= i_WB_data_RegAddrW;
+					// o_WB_data_MemData <= i_WB_data_MemData;
+					o_WB_data_ALUData <= i_WB_data_ALUData;
+				end
+			end
 		end
 	end
 

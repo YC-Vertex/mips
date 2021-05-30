@@ -9,6 +9,7 @@ module ID(
 	/* --- output --- */
 	output	wire	[31:0]	o_EX_data_RSData,
 	output	wire	[31:0]	o_MEM_data_RTData,
+	output	wire	[4:0]	o_EX_data_RSAddr,
 	output	wire	[4:0]	o_EX_data_RTAddr,
 	output	wire	[4:0]	o_EX_data_RDAddr,
 	output	wire	[31:0]	o_EX_data_ExtImm,
@@ -54,6 +55,7 @@ module ID(
 	/* Output Assignment Begin */
     assign o_EX_data_RSData = i_ID_reg_RegData1;
     assign o_MEM_data_RTData = i_ID_reg_RegData2;
+    assign o_EX_data_RSAddr = RS;
     assign o_EX_data_RTAddr = RT;
     assign o_EX_data_RDAddr = RD;
     assign o_EX_data_ExtImm = {{16{ADDR[15]}}, ADDR};

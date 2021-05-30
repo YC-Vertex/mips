@@ -8,6 +8,7 @@ Signal = [
     ('instruction', 'IF', 'ID',     'data', 32),
     ('RSData',      'ID', 'EX',     'data', 32),
     ('RTData',      'ID', 'MEM',    'data', 32),
+    ('RSAddr',      'ID', 'EX',     'data', 5),
     ('RTAddr',      'ID', 'EX',     'data', 5),
     ('RDAddr',      'ID', 'EX',     'data', 5),
     ('ExtImm',      'ID', 'EX',     'data', 32),
