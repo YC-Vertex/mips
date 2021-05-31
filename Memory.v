@@ -5,6 +5,8 @@ module Memory(
     input   wire    WEN,
     input   wire    [31:0]  A,
     input   wire    [31:0]  D,
+    input   wire    Hold,
+    input   wire    Flush,
     output  reg     [31:0]  Q
 );
 
@@ -22,12 +24,18 @@ module Memory(
         end
 
         else begin
-            Q <= 32'h0;
+            Q <= 32'hx;
             if (CEN) begin
-                Q <= MEM[A[11:2]];
-                if (WEN) begin
+                // read
+                if (Hold)
+                    Q <= Q;
+                else if (Flush)
+                    Q <= 32'h0;
+                else
+                    Q <= MEM[A[11:2]];
+                // write
+                if (WEN)
                     MEM[A[11:2]] <= D;
-                end
             end
         end
     end

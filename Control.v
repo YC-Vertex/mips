@@ -1,7 +1,7 @@
 module Control(
     input [5:0] Op,
     output reg [3:0] ALUOp,
-    output reg ALUSrc,RegDst,MemWrite,MemRead,RegWrite,MemtoReg,Branch,jump,SignExtend,pcreg
+    output reg ALUSrc,RegDst,MemWrite,MemRead,RegWrite,MemtoReg,Branch,Beq,Jump
 );
 
     always@(*)
@@ -17,9 +17,7 @@ module Control(
                 MemWrite<=1'b0;
                 Branch<=1'b0;
                 ALUOp<=4'b1000;
-                jump<=1'b0;
-                SignExtend<=1'b1;
-                pcreg<=1'b0;
+                Jump<=1'b0;
             end
             6'b100011://lw
             begin
@@ -31,10 +29,7 @@ module Control(
                 MemWrite<=1'b0;
                 Branch<=1'b0;
                 ALUOp<=4'b0000;
-                jump<=1'b0;
-                SignExtend<=1'b1;
-                pcreg<=1'b0;
-
+                Jump<=1'b0;
             end
             6'b101011://sw
             begin
@@ -46,10 +41,7 @@ module Control(
                 MemWrite<=1'b1;
                 Branch<=1'b0;
                 ALUOp<=4'b0000;
-                jump<=1'b0;
-                SignExtend<=1'b1;
-                pcreg<=1'b0;
-
+                Jump<=1'b0;
             end
             6'b000100://beq
             begin
@@ -61,10 +53,8 @@ module Control(
                 MemWrite<=1'b0;
                 Branch<=1'b1;
                 ALUOp<=4'b0100;
-                jump<=1'b0;
-                SignExtend<=1'b1;
-                pcreg<=1'b0;
-
+                Jump<=1'b0;
+                Beq<=1'b1;
             end
             6'b000101://bne
             begin
@@ -76,9 +66,8 @@ module Control(
                 MemWrite<=1'b0;
                 Branch<=1'b1;
                 ALUOp<=4'b0110;
-                jump<=1'b0;
-                SignExtend<=1'b1;
-                pcreg<=1'b0;
+                Jump<=1'b0;
+                Beq<=1'b0;
             end
             6'b001000://addi
             begin
@@ -90,8 +79,7 @@ module Control(
                 MemWrite<=1'b0;
                 Branch<=1'b0;
                 ALUOp<=4'b0001;
-                jump<=1'b0;
-                pcreg<=1'b0;
+                Jump<=1'b0;
             end
             6'b001001://addiu
             begin
@@ -103,9 +91,7 @@ module Control(
                 MemWrite<=1'b0;
                 Branch<=1'b0;
                 ALUOp<=4'b0001;
-                jump<=1'b0;
-                SignExtend<=1'b0;
-                pcreg<=1'b0;
+                Jump<=1'b0;
             end
             6'b001100://andi
             begin
@@ -117,10 +103,8 @@ module Control(
                 MemWrite<=1'b0;
                 Branch<=1'b0;
                 ALUOp<=4'b0010;
-                jump<=1'b0;
-                SignExtend<=1'b0;
-                pcreg<=1'b0;
-                end
+                Jump<=1'b0;
+            end
             6'b001101://ori
             begin
                 RegDst<=1'b0;
@@ -131,9 +115,7 @@ module Control(
                 MemWrite<=1'b0;
                 Branch<=1'b0;
                 ALUOp<=4'b0011;
-                jump<=1'b0;
-                SignExtend<=1'b0;
-                pcreg<=1'b0;
+                Jump<=1'b0;
             end
             6'b001110://xori
             begin
@@ -145,9 +127,7 @@ module Control(
                 MemWrite<=1'b0;
                 Branch<=1'b0;
                 ALUOp<=4'b0101;
-                jump<=1'b0;
-                SignExtend<=1'b0;
-                pcreg<=1'b0;
+                Jump<=1'b0;
             end
             6'b001111://lui
             begin
@@ -159,9 +139,7 @@ module Control(
                 MemWrite<=1'b0;
                 Branch<=1'b0;
                 ALUOp<=4'b0111;
-                jump<=1'b0;
-                SignExtend<=1'b1;
-                pcreg<=1'b0;
+                Jump<=1'b0;
             end
             6'b000010://j
             begin
@@ -173,9 +151,7 @@ module Control(
                 MemWrite<=1'b0;
                 Branch<=1'b0;
                 ALUOp<=4'b0111;
-                jump<=1'b1;
-                SignExtend<=1'b1;
-                pcreg<=1'b0;
+                Jump<=1'b1;
             end
             6'b000011://jal
             begin
@@ -187,9 +163,7 @@ module Control(
                 MemWrite<=1'b0;
                 Branch<=1'b0;
                 ALUOp<=4'b0111;
-                jump<=1'b1;
-                SignExtend<=1'b1;
-                pcreg<=1'b1;
+                Jump<=1'b1;
             end
             default:
             begin
@@ -201,6 +175,7 @@ module Control(
                 MemWrite<=1'b0;
                 Branch<=1'b0;
                 ALUOp<=4'b0000;
+                Jump<=1'b0;
             end
         endcase
     end

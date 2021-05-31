@@ -10,8 +10,10 @@ module TESTBENCH;
 
     initial begin
         clk = 1'b1;
-        nrst = 1'b0;
-        #(`PERIOD * 9.9) nrst <= 1'b1;
+        #(`PERIOD * 2.1) nrst = 1'b0;
+        #(`PERIOD * 2) nrst <= 1'b1;
+        #(`PERIOD * 2) nrst = 1'b0;
+        #(`PERIOD * 2) nrst <= 1'b1;
     end
 
     always #(`PERIOD) clk = ~clk;

@@ -1,5 +1,5 @@
 module WB(
-	/* --- global ---*/
+	/* --- global --- */
 	input	wire	clk,
 	input	wire	nrst,
 	/* --- input --- */
@@ -12,8 +12,6 @@ module WB(
 	output	wire	[4:0]	o_WB_reg_RegAddrW,
 	output	wire	[31:0]	o_WB_reg_RegDataW,
 	output	wire			o_WB_reg_RegWrite
-	/* --- bypass --- */
-	
 );
 
 	/* Output Assignment Begin */

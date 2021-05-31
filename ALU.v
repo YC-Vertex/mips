@@ -4,14 +4,12 @@ module ALU(
     input [31:0] B,
     input [4:0] Shamt,
     output reg [31:0] ALUOut,
-    output wire Zero,
     output wire Overflow
 );
 
     wire signed [31:0] A_signed, B_signed;
     assign A_signed = A;
     assign B_signed = B;
-    assign Zero = ALUCtl == 4'b0110 ? ALUOut == 0 : ALUOut != 0;
     assign Overflow = ((ALUOut==0) & (~ALUCtl[3])) | ((ALUOut!=0) & (ALUCtl[3])) ? 1 : 0;
 
     always @ (*)
