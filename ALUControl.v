@@ -27,7 +27,7 @@ module ALUControl(
                 4'b0010:ALUCtl<=4'b0000;//and andi
                 4'b0011:ALUCtl<=4'b0001;//or ori
                 4'b0100:ALUCtl<=4'b0110;//sub beq 
-                4'b0110:ALUCtl<=4'b1110;//bne
+                4'b0110:ALUCtl<=4'b1110;//jal
                 4'b0101:ALUCtl<=4'b1011;//xor
                 4'b0111:ALUCtl<=4'b1000;//lui
                 default:ALUCtl<=4'b1111;

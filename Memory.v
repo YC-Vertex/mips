@@ -13,7 +13,7 @@ module Memory(
     parameter fmem = 0;
     integer i;
 
-    reg [31:0] MEM [0:1023];
+    reg [31:0] MEM [0:255];
 
     always @ (posedge clk or negedge  nrst) begin
         if (~nrst) begin

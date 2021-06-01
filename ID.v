@@ -41,11 +41,14 @@ module ID(
     assign {OP, RS, RT, RD, SHAMT, FUNCT} = INSTR;
     assign IMM = INSTR[15:0];
 
+	wire Jr;
+	assign Jr = (OP == 6'b00_0000) && (FUNCT == 6'b00_1000);
+
 	wire [3:0] ALUOp;
     wire ALUSrc, RegDst, MemWrite, MemRead, Mem2Reg, RegWrite;
 	wire Br, Eq, Jp;
     Control control(
-        .Op(OP),
+        .Op(Jr ? 6'b00_0010 : OP),
         .ALUOp(ALUOp),
         .ALUSrc(ALUSrc),.RegDst(RegDst),
         .MemWrite(MemWrite), .MemRead(MemRead),
@@ -74,16 +77,19 @@ module ID(
 			end
 		end
 		else if (~Br & Jp) begin
-			PCBranch = {PCNext[31:28], INSTR[25:0], 2'b00};
+			if (Jr)
+				PCBranch = RSData;
+			else
+				PCBranch = {PCNext[31:28], INSTR[25:0], 2'b00};
 			PCSrc = 1'b1;
 		end
 	end
 
 	/* Output Assignment Begin */
-    assign o_EX_data_RSData = RSData;
+    assign o_EX_data_RSData = (Jp & RegWrite) ? PCNext : RSData;
     assign o_MEM_data_RTData = RTData;
     assign o_EX_data_RSAddr = RS;
-    assign o_EX_data_RTAddr = RT;
+    assign o_EX_data_RTAddr = (Jp & RegWrite) ? 5'd31 : RT;
     assign o_EX_data_RDAddr = RD;
     assign o_EX_data_ExtImm = ExtImm;
     assign o_EX_data_Shamt = SHAMT;

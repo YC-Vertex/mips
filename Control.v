@@ -45,28 +45,28 @@ module Control(
             end
             6'b000100://beq
             begin
-                RegDst<=1'b1;
+                RegDst<=1'b0;
                 ALUSrc<=1'b0;
-                MemtoReg<=1'b1;
+                MemtoReg<=1'b0;
                 RegWrite<=1'b0;
                 MemRead<=1'b0;
                 MemWrite<=1'b0;
-                Branch<=1'b1;
-                ALUOp<=4'b0100;
+                ALUOp<=4'b0000;
                 Jump<=1'b0;
+                Branch<=1'b1;
                 Beq<=1'b1;
             end
             6'b000101://bne
             begin
-                RegDst<=1'b1;
+                RegDst<=1'b0;
                 ALUSrc<=1'b0;
-                MemtoReg<=1'b1;
+                MemtoReg<=1'b0;
                 RegWrite<=1'b0;
                 MemRead<=1'b0;
                 MemWrite<=1'b0;
-                Branch<=1'b1;
-                ALUOp<=4'b0110;
+                ALUOp<=4'b0000;
                 Jump<=1'b0;
+                Branch<=1'b1;
                 Beq<=1'b0;
             end
             6'b001000://addi
@@ -144,25 +144,25 @@ module Control(
             6'b000010://j
             begin
                 RegDst<=1'b0;
-                ALUSrc<=1'b1;
+                ALUSrc<=1'b0;
                 MemtoReg<=1'b0;
-                RegWrite<=1'b1;
+                RegWrite<=1'b0;
                 MemRead<=1'b0;
                 MemWrite<=1'b0;
                 Branch<=1'b0;
-                ALUOp<=4'b0111;
+                ALUOp<=4'b0000;
                 Jump<=1'b1;
             end
             6'b000011://jal
             begin
                 RegDst<=1'b0;
-                ALUSrc<=1'b1;
+                ALUSrc<=1'b0;
                 MemtoReg<=1'b0;
                 RegWrite<=1'b1;
                 MemRead<=1'b0;
                 MemWrite<=1'b0;
                 Branch<=1'b0;
-                ALUOp<=4'b0111;
+                ALUOp<=4'b0110;
                 Jump<=1'b1;
             end
             default:

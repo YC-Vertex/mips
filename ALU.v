@@ -16,7 +16,7 @@ module ALU(
     begin
         case (ALUCtl)
             4'b0010, 4'b0011: ALUOut <= A + B; // add
-            4'b0110, 4'b1110: ALUOut <= A - B; // sub
+            4'b0110: ALUOut <= A - B; // sub
             4'b0000: ALUOut <= A & B; // and
             4'b0001: ALUOut <= A | B; // or
             // 4'b1100: ALUOut <= ~(A | B);
@@ -26,6 +26,7 @@ module ALU(
             4'b1000: ALUOut <= B << 16; // lui
             // 4'b1101: ALUOut <= (A == 0) ? 32'd32 : {27'b0, result}; // clz
             4'b1011: ALUOut <= A ^ B; // xor
+            4'b1110: AlUOut <= A; // jal
             default: ALUOut <= 0;
         endcase
     end
