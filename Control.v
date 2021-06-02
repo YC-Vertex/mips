@@ -1,181 +1,127 @@
 module Control(
     input [5:0] Op,
     output reg [3:0] ALUOp,
-    output reg ALUSrc,RegDst,MemWrite,MemRead,RegWrite,MemtoReg,Branch,Beq,Jump
+    output reg ALUSrc,RegDst,MemWrite,MemRead,RegWrite,MemtoReg,
+    output reg [1:0] Jump,
+    output reg [1:0] Branch
 );
 
-    always@(*)
-    begin
-        case(Op)
-            6'd0://R
-            begin
-                RegDst<=1'b1;
-                ALUSrc<=1'b0;
-                MemtoReg<=1'b0;
-                RegWrite<=1'b1;
-                MemRead<=1'b0;
-                MemWrite<=1'b0;
-                Branch<=1'b0;
-                ALUOp<=4'b1000;
-                Jump<=1'b0;
+	localparam BEQ = 2'b01;
+	localparam BNE = 2'b10;
+	localparam J   = 2'b01;
+	localparam JAL = 2'b10;
+	localparam JR  = 2'b11;
+
+    always @ (*) begin
+        RegDst  <= 1'b0;
+        ALUSrc  <= 1'b0;
+        MemtoReg<= 1'b0;
+        RegWrite<= 1'b0;
+        MemRead <= 1'b0;
+        MemWrite<= 1'b0;
+        ALUOp   <= 4'b0000;
+        Jump    <= 2'b0;
+        Branch  <= 2'b0;
+
+        case (Op)
+            6'b000000: begin // R-type
+                RegDst  <= 1'b1;
+                ALUSrc  <= 1'b0;
+                MemtoReg<= 1'b0;
+                RegWrite<= 1'b1;
+                MemRead <= 1'b0;
+                MemWrite<= 1'b0;
+                ALUOp   <= 4'b1000;
             end
-            6'b100011://lw
-            begin
-                RegDst<=1'b0;
-                ALUSrc<=1'b1;
-                MemtoReg<=1'b1;
-                RegWrite<=1'b1;
-                MemRead<=1'b1;
-                MemWrite<=1'b0;
-                Branch<=1'b0;
-                ALUOp<=4'b0000;
-                Jump<=1'b0;
+
+            6'b000010: begin // j
+                Jump <= J;
             end
-            6'b101011://sw
-            begin
-                RegDst<=1'b1;
-                ALUSrc<=1'b1;
-                MemtoReg<=1'b1;
-                RegWrite<=1'b0;
-                MemRead<=1'b0;
-                MemWrite<=1'b1;
-                Branch<=1'b0;
-                ALUOp<=4'b0000;
-                Jump<=1'b0;
+            6'b000011: begin // jal
+                Jump <= JAL;
+                RegWrite<= 1'b1;
             end
-            6'b000100://beq
-            begin
-                RegDst<=1'b0;
-                ALUSrc<=1'b0;
-                MemtoReg<=1'b0;
-                RegWrite<=1'b0;
-                MemRead<=1'b0;
-                MemWrite<=1'b0;
-                ALUOp<=4'b0000;
-                Jump<=1'b0;
-                Branch<=1'b1;
-                Beq<=1'b1;
+            6'b000100: begin // beq
+                Branch <= BEQ;
+                ALUOp   <= 4'b0001;
             end
-            6'b000101://bne
-            begin
-                RegDst<=1'b0;
-                ALUSrc<=1'b0;
-                MemtoReg<=1'b0;
-                RegWrite<=1'b0;
-                MemRead<=1'b0;
-                MemWrite<=1'b0;
-                ALUOp<=4'b0000;
-                Jump<=1'b0;
-                Branch<=1'b1;
-                Beq<=1'b0;
+            6'b000101: begin // bne
+                Branch <= BNE;
+                ALUOp   <= 4'b0001;
             end
-            6'b001000://addi
-            begin
-                RegDst<=1'b0;
-                ALUSrc<=1'b1;
-                MemtoReg<=1'b0;
-                RegWrite<=1'b1;
-                MemRead<=1'b0;
-                MemWrite<=1'b0;
-                Branch<=1'b0;
-                ALUOp<=4'b0001;
-                Jump<=1'b0;
+
+            6'b001000: begin // addi
+                RegDst  <= 1'b0;
+                ALUSrc  <= 1'b1;
+                MemtoReg<= 1'b0;
+                RegWrite<= 1'b1;
+                MemRead <= 1'b0;
+                MemWrite<= 1'b0;
+                ALUOp   <= 4'b0001;
             end
-            6'b001001://addiu
-            begin
-                RegDst<=1'b0;
-                ALUSrc<=1'b1;
-                MemtoReg<=1'b0;
-                RegWrite<=1'b1;
-                MemRead<=1'b0;
-                MemWrite<=1'b0;
-                Branch<=1'b0;
-                ALUOp<=4'b0001;
-                Jump<=1'b0;
+            6'b001001: begin // addiu
+                RegDst  <= 1'b0;
+                ALUSrc  <= 1'b1;
+                MemtoReg<= 1'b0;
+                RegWrite<= 1'b1;
+                MemRead <= 1'b0;
+                MemWrite<= 1'b0;
+                ALUOp   <= 4'b0001;
             end
-            6'b001100://andi
-            begin
-                RegDst<=1'b0;
-                ALUSrc<=1'b1;
-                MemtoReg<=1'b0;
-                RegWrite<=1'b1;
-                MemRead<=1'b0;
-                MemWrite<=1'b0;
-                Branch<=1'b0;
-                ALUOp<=4'b0010;
-                Jump<=1'b0;
+            6'b001100: begin // andi
+                RegDst  <= 1'b0;
+                ALUSrc  <= 1'b1;
+                MemtoReg<= 1'b0;
+                RegWrite<= 1'b1;
+                MemRead <= 1'b0;
+                MemWrite<= 1'b0;
+                ALUOp   <= 4'b0010;
             end
-            6'b001101://ori
-            begin
-                RegDst<=1'b0;
-                ALUSrc<=1'b1;
-                MemtoReg<=1'b0;
-                RegWrite<=1'b1;
-                MemRead<=1'b0;
-                MemWrite<=1'b0;
-                Branch<=1'b0;
-                ALUOp<=4'b0011;
-                Jump<=1'b0;
+            6'b001101: begin // ori
+                RegDst  <= 1'b0;
+                ALUSrc  <= 1'b1;
+                MemtoReg<= 1'b0;
+                RegWrite<= 1'b1;
+                MemRead <= 1'b0;
+                MemWrite<= 1'b0;
+                ALUOp   <= 4'b0011;
             end
-            6'b001110://xori
-            begin
-                RegDst<=1'b0;
-                ALUSrc<=1'b1;
-                MemtoReg<=1'b0;
-                RegWrite<=1'b1;
-                MemRead<=1'b0;
-                MemWrite<=1'b0;
-                Branch<=1'b0;
-                ALUOp<=4'b0101;
-                Jump<=1'b0;
+            6'b001110: begin // xori
+                RegDst  <= 1'b0;
+                ALUSrc  <= 1'b1;
+                MemtoReg<= 1'b0;
+                RegWrite<= 1'b1;
+                MemRead <= 1'b0;
+                MemWrite<= 1'b0;
+                ALUOp   <= 4'b0101;
             end
-            6'b001111://lui
-            begin
-                RegDst<=1'b0;
-                ALUSrc<=1'b1;
-                MemtoReg<=1'b0;
-                RegWrite<=1'b1;
-                MemRead<=1'b0;
-                MemWrite<=1'b0;
-                Branch<=1'b0;
-                ALUOp<=4'b0111;
-                Jump<=1'b0;
+
+            6'b001111: begin // lui
+                RegDst  <= 1'b0;
+                ALUSrc  <= 1'b1;
+                MemtoReg<= 1'b0;
+                RegWrite<= 1'b1;
+                MemRead <= 1'b0;
+                MemWrite<= 1'b0;
+                ALUOp   <= 4'b0111;
             end
-            6'b000010://j
-            begin
-                RegDst<=1'b0;
-                ALUSrc<=1'b0;
-                MemtoReg<=1'b0;
-                RegWrite<=1'b0;
-                MemRead<=1'b0;
-                MemWrite<=1'b0;
-                Branch<=1'b0;
-                ALUOp<=4'b0000;
-                Jump<=1'b1;
+            6'b100011: begin // lw
+                RegDst  <= 1'b0;
+                ALUSrc  <= 1'b1;
+                MemtoReg<= 1'b1;
+                RegWrite<= 1'b1;
+                MemRead <= 1'b1;
+                MemWrite<= 1'b0;
+                ALUOp   <= 4'b0001;
             end
-            6'b000011://jal
-            begin
-                RegDst<=1'b0;
-                ALUSrc<=1'b0;
-                MemtoReg<=1'b0;
-                RegWrite<=1'b1;
-                MemRead<=1'b0;
-                MemWrite<=1'b0;
-                Branch<=1'b0;
-                ALUOp<=4'b0110;
-                Jump<=1'b1;
-            end
-            default:
-            begin
-                RegDst<=1'b0;
-                ALUSrc<=1'b0;
-                MemtoReg<=1'b0;
-                RegWrite<=1'b0;
-                MemRead<=1'b0;
-                MemWrite<=1'b0;
-                Branch<=1'b0;
-                ALUOp<=4'b0000;
-                Jump<=1'b0;
+            6'b101011: begin // sw
+                RegDst  <= 1'b1;
+                ALUSrc  <= 1'b1;
+                MemtoReg<= 1'b1;
+                RegWrite<= 1'b0;
+                MemRead <= 1'b0;
+                MemWrite<= 1'b1;
+                ALUOp   <= 4'b0001;
             end
         endcase
     end

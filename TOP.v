@@ -13,6 +13,7 @@ module TOP(
 
 
     wire	[31:0]	ID_PCNext_i;
+    wire	[31:0]	ID_PCNext_o;
     wire	[31:0]	ID_instruction_i;
     wire	[31:0]	ID_RSData_o;
     wire	[31:0]	ID_RTData_o;
@@ -25,12 +26,12 @@ module TOP(
     wire	[3:0]	ID_ALUOp_o;
     wire			ID_ALUSrc_o;
     wire			ID_RegDst_o;
+    wire	[1:0]	ID_Jump_o;
+    wire	[1:0]	ID_Branch_o;
     wire			ID_MemWrite_o;
     wire			ID_MemRead_o;
     wire			ID_Mem2Reg_o;
     wire			ID_RegWrite_o;
-    wire			ID_PCSrc_o; assign IF_PCSrc_i = ID_PCSrc_o;
-    wire	[31:0]	ID_PCBranch_o; assign IF_PCBranch_i = ID_PCBranch_o;
     // ID external signal (connected to Memory or Register File)
     wire	[4:0]	ID_RegAddr1_o;
     wire	[4:0]	ID_RegAddr2_o;
@@ -38,6 +39,7 @@ module TOP(
     wire	[31:0]	ID_RegData2_i;
 
 
+    wire	[31:0]	EX_PCNext_i;
     wire	[31:0]	EX_RSData_i;
     wire	[31:0]	EX_RTData_i;
     wire	[31:0]	EX_RTData_o;
@@ -50,6 +52,8 @@ module TOP(
     wire	[3:0]	EX_ALUOp_i;
     wire			EX_ALUSrc_i;
     wire			EX_RegDst_i;
+    wire	[1:0]	EX_Jump_i;
+    wire	[1:0]	EX_Branch_i;
     wire			EX_MemWrite_i;
     wire			EX_MemWrite_o;
     wire			EX_MemRead_i;
@@ -61,6 +65,8 @@ module TOP(
     wire	[31:0]	EX_ALUOut_o;
     wire			EX_Overflow_o;
     wire	[4:0]	EX_RegAddrW_o;
+    wire			EX_PCSrc_o; assign IF_PCSrc_i = EX_PCSrc_o;
+    wire	[31:0]	EX_PCBranch_o; assign IF_PCBranch_i = EX_PCBranch_o;
     // EX external signal (connected to Memory or Register File)
 
 
@@ -135,11 +141,17 @@ module TOP(
         if (EX_MemRead_i && (EX_RegAddrW_o == ID_RSAddr_o || EX_RegAddrW_o == ID_RTAddr_o))
             NopLd = 1'b1;
     end
-    reg NopBr;
+
+    reg NopBr1, NopBr2;
     always @ (*) begin
-        NopBr = 1'b0;
-        if (ID_PCSrc_o)
-            NopBr = 1'b1;
+        NopBr1 = 1'b0;
+        NopBr2 = 1'b0;
+        if (EX_PCSrc_o) begin
+            NopBr2 = 1'b1;
+        end
+        else if (ID_Jump_o != 2'b0 || ID_Branch_o != 2'b0) begin
+            NopBr1 = 1'b1;
+        end
     end
 
 
@@ -147,12 +159,13 @@ module TOP(
         /* --- global --- */
         .clk(clk),
         .nrst(nrst),
+        .stall(NopLd),
         /* --- input --- */
         .i_IF_ctrl_PCSrc(IF_PCSrc_i),
         .i_IF_data_PCBranch(IF_PCBranch_i),
         .i_IF_mem_ImemDataR(IF_ImemDataR_i),
         /* --- output --- */
-        .o_ID_data_PCNext(IF_PCNext_o),
+        .o_EX_data_PCNext(IF_PCNext_o),
         .o_ID_data_instruction(IF_instruction_o),
         .o_IF_mem_ImemAddr(IF_ImemAddr_o)
     );
@@ -162,10 +175,10 @@ module TOP(
         .clk(clk),
         .nrst(nrst),
         .stall(NopLd),
-        .bubble(NopBr),
+        .bubble(NopBr2),
         /* --- bypass --- */
-        .i_ID_data_PCNext(IF_PCNext_o),
-        .o_ID_data_PCNext(ID_PCNext_i),
+        .i_EX_data_PCNext(IF_PCNext_o),
+        .o_EX_data_PCNext(ID_PCNext_i),
         .i_ID_data_instruction(IF_instruction_o),
         .o_ID_data_instruction(ID_instruction_i)
     );
@@ -175,7 +188,6 @@ module TOP(
         .clk(clk),
         .nrst(nrst),
         /* --- input --- */
-        .i_ID_data_PCNext(ID_PCNext_i),
         .i_ID_data_instruction(ID_instruction_i),
         .i_ID_reg_RegData1(ID_RegData1_i),
         .i_ID_reg_RegData2(ID_RegData2_i),
@@ -191,14 +203,17 @@ module TOP(
         .o_EX_ctrl_ALUOp(ID_ALUOp_o),
         .o_EX_ctrl_ALUSrc(ID_ALUSrc_o),
         .o_EX_ctrl_RegDst(ID_RegDst_o),
+        .o_EX_ctrl_Jump(ID_Jump_o),
+        .o_EX_ctrl_Branch(ID_Branch_o),
         .o_MEM_ctrl_MemWrite(ID_MemWrite_o),
         .o_MEM_ctrl_MemRead(ID_MemRead_o),
         .o_WB_ctrl_Mem2Reg(ID_Mem2Reg_o),
         .o_WB_ctrl_RegWrite(ID_RegWrite_o),
-        .o_IF_ctrl_PCSrc(ID_PCSrc_o),
-        .o_IF_data_PCBranch(ID_PCBranch_o),
         .o_ID_reg_RegAddr1(ID_RegAddr1_o),
-        .o_ID_reg_RegAddr2(ID_RegAddr2_o)
+        .o_ID_reg_RegAddr2(ID_RegAddr2_o),
+        /* --- bypass --- */
+        .i_EX_data_PCNext(ID_PCNext_i),
+        .o_EX_data_PCNext(ID_PCNext_o)
     );
 
     ID_EX_Reg id_ex_reg(
@@ -206,8 +221,10 @@ module TOP(
         .clk(clk),
         .nrst(nrst),
         .stall(1'b0),
-        .bubble(NopLd),
+        .bubble(NopLd | NopBr2),
         /* --- bypass --- */
+        .i_EX_data_PCNext(ID_PCNext_o),
+        .o_EX_data_PCNext(EX_PCNext_i),
         .i_EX_data_RSData(ID_RSData_o),
         .o_EX_data_RSData(EX_RSData_i),
         .i_MEM_data_RTData(ID_RTData_o),
@@ -230,6 +247,10 @@ module TOP(
         .o_EX_ctrl_ALUSrc(EX_ALUSrc_i),
         .i_EX_ctrl_RegDst(ID_RegDst_o),
         .o_EX_ctrl_RegDst(EX_RegDst_i),
+        .i_EX_ctrl_Jump(ID_Jump_o),
+        .o_EX_ctrl_Jump(EX_Jump_i),
+        .i_EX_ctrl_Branch(ID_Branch_o),
+        .o_EX_ctrl_Branch(EX_Branch_i),
         .i_MEM_ctrl_MemWrite(ID_MemWrite_o),
         .o_MEM_ctrl_MemWrite(EX_MemWrite_i),
         .i_MEM_ctrl_MemRead(ID_MemRead_o),
@@ -245,6 +266,7 @@ module TOP(
         .clk(clk),
         .nrst(nrst),
         /* --- input --- */
+        .i_EX_data_PCNext(EX_PCNext_i),
         .i_EX_data_RSData(EX_RSData_i_fwd),
         .i_EX_data_RSAddr(EX_RSAddr_i),
         .i_EX_data_RTAddr(EX_RTAddr_i),
@@ -255,10 +277,14 @@ module TOP(
         .i_EX_ctrl_ALUOp(EX_ALUOp_i),
         .i_EX_ctrl_ALUSrc(EX_ALUSrc_i),
         .i_EX_ctrl_RegDst(EX_RegDst_i),
+        .i_EX_ctrl_Jump(EX_Jump_i),
+        .i_EX_ctrl_Branch(EX_Branch_i),
         /* --- output --- */
         .o_MEM_data_ALUOut(EX_ALUOut_o),
         .o_MEM_data_Overflow(EX_Overflow_o),
         .o_WB_data_RegAddrW(EX_RegAddrW_o),
+        .o_IF_ctrl_PCSrc(EX_PCSrc_o),
+        .o_IF_data_PCBranch(EX_PCBranch_o),
         /* --- bypass --- */
         .i_MEM_data_RTData(EX_RTData_i_fwd),
         .o_MEM_data_RTData(EX_RTData_o),
@@ -361,18 +387,18 @@ module TOP(
 
 
     Memory #("data/imem.hex") imem(
-        .clk(clk), .nrst(nrst),
+        .clk(clk),
         .CEN(1'b1),
         .WEN(1'b0),
         .A(IF_ImemAddr_o),
         .D(32'h0),
         .Hold(NopLd),
-        .Flush(NopBr),
+        .Flush(~nrst | NopBr2),
         .Q(IF_ImemDataR_i)
     );
 
     Memory #("data/dmem.hex") dmem(
-        .clk(clk), .nrst(nrst),
+        .clk(clk),
         .CEN(1'b1),
         .WEN(MEM_MemWrite_o),
         .A(MEM_DmemAddr_o),
@@ -390,10 +416,7 @@ module TOP(
         .ReadData1(ID_RegData1_i),
         .ReadData2(ID_RegData2_i),
         .WriteReg(WB_RegAddrW_o),
-        .WriteData(WB_RegDataW_o),
-        .RSFwd(fwd_rs_regfile),
-        .RTFwd(fwd_rt_regfile),
-        .DataFwd(EX_ALUOut_o)
+        .WriteData(WB_RegDataW_o)
     );
 
 endmodule

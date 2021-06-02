@@ -2,12 +2,13 @@ module IF(
 	/* --- global --- */
 	input	wire	clk,
 	input	wire	nrst,
+    input   wire    stall,
 	/* --- input --- */
 	input	wire			i_IF_ctrl_PCSrc,
 	input	wire	[31:0]	i_IF_data_PCBranch,
 	input	wire	[31:0]	i_IF_mem_ImemDataR,
 	/* --- output --- */
-	output	wire	[31:0]	o_ID_data_PCNext,
+	output	wire	[31:0]	o_EX_data_PCNext,
 	output	wire	[31:0]	o_ID_data_instruction,
 	output	wire	[31:0]	o_IF_mem_ImemAddr
 );
@@ -28,7 +29,9 @@ module IF(
             PC <= MIPS_START_ADDR;
         end
         else begin
-            if (PCSrc)
+            if (stall)
+                PC <= PC;
+            else if (PCSrc)
                 PC <= PCBranch;
             else
                 PC <= PCNext;
@@ -36,7 +39,7 @@ module IF(
     end
 
 	/* Output Assignment Begin */
-	assign o_ID_data_PCNext = PCNext;
+	assign o_EX_data_PCNext = PCNext;
 	assign o_ID_data_instruction = i_IF_mem_ImemDataR;
 	assign o_IF_mem_ImemAddr = PC;
 	/* Output Assignment End */

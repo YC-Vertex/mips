@@ -7,19 +7,14 @@ module RegFile(
     input [4:0] WriteReg,
     input [31:0] WriteData,
     output [31:0] ReadData1,
-    output [31:0] ReadData2,
-    input   wire            RSFwd,
-    input   wire            RTFwd,
-    input   wire    [31:0]  DataFwd
+    output [31:0] ReadData2
 );
 
     reg [31:0] regFile[1:31];
     integer i;
-    assign ReadData1 = RSFwd ? DataFwd :
-        (ReadReg1==5'b0) ? 32'b0 : 
+    assign ReadData1 = (ReadReg1==5'b0) ? 32'b0 : 
         (RegWre && ReadReg1==WriteReg) ? WriteData : regFile[ReadReg1]; // bypass RS
-    assign ReadData2 = RTFwd ? DataFwd :
-        (ReadReg2==5'b0) ? 32'b0 : 
+    assign ReadData2 = (ReadReg2==5'b0) ? 32'b0 : 
         (RegWre && ReadReg2==WriteReg) ? WriteData : regFile[ReadReg2]; // bypass RT
 
     always@(posedge CLK or negedge RST)

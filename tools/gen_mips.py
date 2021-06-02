@@ -5,7 +5,7 @@ STAGE = ['IF', 'IF_ID_Reg', 'ID', 'ID_EX_Reg', 'EX', 'EX_MEM_Reg', 'MEM', 'MEM_W
 TYPE = ['data', 'ctrl', 'mem', 'reg']
 
 Signal = [
-    ('PCNext',      'IF', 'ID',     'data', 32),
+    ('PCNext',      'IF', 'EX',     'data', 32),
     ('instruction', 'IF', 'ID',     'data', 32),
     ('RSData',      'ID', 'EX',     'data', 32),
     ('RTData',      'ID', 'MEM',    'data', 32),
@@ -18,6 +18,8 @@ Signal = [
     ('ALUOp',       'ID', 'EX',     'ctrl', 4),
     ('ALUSrc',      'ID', 'EX',     'ctrl', 1),
     ('RegDst',      'ID', 'EX',     'ctrl', 1),
+    ('Jump',        'ID', 'EX',     'ctrl', 2),
+    ('Branch',      'ID', 'EX',     'ctrl', 2),
     ('MemWrite',    'ID', 'MEM',    'ctrl', 1),
     ('MemRead',     'ID', 'MEM',    'ctrl', 1),
     ('Mem2Reg',     'ID', 'WB',     'ctrl', 1),
@@ -30,8 +32,8 @@ Signal = [
 ]
 
 Signal_Next = [
-    ('PCSrc',       'ID', 'IF',     'ctrl', 1),
-    ('PCBranch',    'ID', 'IF',     'data', 32)
+    ('PCSrc',       'EX', 'IF',     'ctrl', 1),
+    ('PCBranch',    'EX', 'IF',     'data', 32)
 ]
 
 Signal_External = [
