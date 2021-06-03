@@ -50,7 +50,9 @@ module ID(
     assign IMM = INSTR[15:0];
 
 	wire Jr;
+	wire ZeroExtend;
 	assign Jr = (OP == 6'b00_0000) && (FUNCT == 6'b00_1000);
+	assign ZeroExtend = (OP == 6'b00_1001) || (OP == 6'b00_1100) || (OP == 6'b001101) || (OP ==6'b001110);
 
 	wire [3:0] ALUOp;
     wire ALUSrc, RegDst, MemWrite, MemRead, Mem2Reg, RegWrite;
@@ -71,7 +73,7 @@ module ID(
     assign o_EX_data_RSAddr = RS;
     assign o_EX_data_RTAddr = RT;
     assign o_EX_data_RDAddr = RD;
-    assign o_EX_data_ExtImm = {{16{IMM[15]}}, IMM};
+    assign o_EX_data_ExtImm = {ZeroExtend ? 16'b0 : {16{IMM[15]}}, IMM};
     assign o_EX_data_Shamt = SHAMT;
     assign o_EX_data_Funct = FUNCT;
     assign o_EX_ctrl_ALUOp = ALUOp;
